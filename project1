@@ -1,0 +1,114 @@
+# Task 1
+
+
+#import panda
+import pandas as pd
+yearly=pd.read_csv(r"C:\Users\Hafza\Downloads\datasets\yearly_deaths_by_clinic.csv")
+yearly
+yearly=pd.DataFrame(yearly)
+yearly
+
+
+list(yearly.columns)
+
+
+# Task 2
+
+#Calculate the proportion of deaths per number of births and store the result
+#in the new column yearly["proportion_deaths"]
+
+yearly["proportion_deaths"]=yearly.deaths/yearly.births
+    
+yearly
+
+yearly1=yearly[yearly['clinic']=='clinic 1']
+yearly2=yearly[yearly['clinic']=='clinic 2']
+
+print(yearly1)
+
+import matplotlib
+ax=yearly1.plot(x='year',y='proportion_deaths', label='clinic 1')
+yearly2.plot(x='year', y='proportion_deaths', label='clinic 2', ax=ax)
+ax.set_ylabel('proportion of deaths virses births')
+
+# Task 4
+
+#Read in datasets/monthly_deaths.csv and assign it to the variable monthly. Make sure to tell read_csv to 
+#parse the date column as a date
+monthly =pd.read_csv(r"C:\Users\Hafza\Downloads\datasets\monthly_deaths.csv",parse_dates=["date"])
+
+monthly
+
+#Calculate the proportion of deaths per number of births and store the result in the new column monthly["proportion_deaths"]
+monthly["proportion_deaths"]=monthly.deaths/monthly.births
+
+monthly
+
+#Print out the first rows in monthly using the head() method.
+monthly.head()
+
+# Task 5
+
+#Plot proportion_deaths by date for the monthly date using the DataFrame plot method.
+import matplotlib
+ax=monthly.plot(x='date',y='proportion_deaths', label='proportion_deaths')
+ax.set_ylabel('proportion of deaths')
+
+# Task 6
+
+#Split monthly into before_washing (the rows in monthly before handwashing_start) and after_washing 
+#(the rows in monthly at and after handwashing_start)
+handwashing_start=pd.to_datetime('1847-06-01')
+before_washing=monthly[monthly['date']<handwashing_start]
+after_washing=monthly[monthly['date']>=handwashing_start]
+ax=before_washing.plot(x='date',y='proportion_deaths',label='before_washing')
+after_washing.plot(x='date',y='proportion_deaths',label='after_washing', ax=ax)
+ax.set_ylabel('proportion of deaths')
+
+
+
+
+
+
+
+# Task 7
+
+before_proportion=before_washing["proportion_deaths"]
+
+before_proportion
+
+after_proportion=after_washing["proportion_deaths"]
+
+after_proportion
+
+after_proportion.mean()
+
+before_proportion.mean()
+
+mean_diff=after_proportion.mean()-before_proportion.mean()
+
+mean_diff
+
+# Task 8
+
+#boot_before and boot_after should be sampled with replacement from before_proportion and after_proportion.
+#Append 3000 bootstrapped differences in means to boot_mean_diff.
+#Calculate a 95% confidence_interval as the 2.5% and 97.5% quantiles of boot_mean_diff
+boot_mean_diff=[]
+for i in range(3000):
+    boot_before = before_proportion.sample(frac=1, replace=True)
+    boot_after = after_proportion.sample(frac=1, replace=True)
+    boot_mean_diff.append(boot_after.mean()-boot_before.mean())
+confidence_interval=pd.Series(boot_mean_diff).quantile([0.025,0.975])
+    
+
+confidence_interval
+
+# Task 9
+
+#Given the data Semmelweis collected, is it True or False that doctors should wash their hands?
+doctors_should_wash_their_hands=True
+print("doctors should wash their hands")
+
+
+
